@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lokasi Pelaporan BPBD</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bpbd-orange: #f57d02;
+            --bpbd-dark-blue: #0f2c59;
+            --light-gray: #f4f4f9;
+        }
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            min-height: 550px;
+            background: #fff;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .graphic-side {
+            background: linear-gradient(rgba(15, 44, 89, 0.85), rgba(15, 44, 89, 0.85)), url(https://images.unsplash.com/photo-1599369986619-4b47a06a5a9c?q=80&w=1887&auto=format&fit=crop) no-repeat center center;
+            background-size: cover;
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .graphic-side h3 {
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .graphic-side p {
+            opacity: 0.8;
+        }
+        .form-side {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+        .bpbd-logo {
+            max-width: 70px;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            font-weight: 600;
+            color: #333;
+        }
+        .btn {
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: var(--bpbd-orange);
+            border-color: var(--bpbd-orange);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background-color: #e07000;
+            border-color: #e07000;
+            box-shadow: 0 4px 15px rgba(245, 125, 2, 0.4);
+        }
+        /* Mobile view adjustments */
+        @media (max-width: 991.98px) {
+            .main-container {
+                flex-direction: column;
+                min-height: auto;
+                max-width: 500px; /* Lebar maksimum di tablet/hp */
+            }
+            .graphic-side {
+                display: none; /* Sembunyikan grafis di layar kecil */
+            }
+            body {
+                background: var(--light-gray); /* Latar belakang abu-abu di HP */
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="col-lg-5 graphic-side d-none d-lg-flex">
+            <div>
+                <img src="https://bidangrrjember.github.io/geocode/logo-bpbd.png" alt="Logo BPBD" style="max-width: 90px; background: white; border-radius: 50%; padding: 10px;">
+                <h3>Sistem Pelaporan Lokasi</h3>
+                <p>Akurasi dan kecepatan data lokasi Anda sangat penting untuk respon yang cepat dan efektif.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-7 col-md-12 form-side">
+            <div class="text-center w-100">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Logo_BPBD.png" alt="Logo BPBD" class="bpbd-logo d-lg-none">
+                <h4 class="card-title">Ambil Titik Koordinat</h4>
+                <p class="text-muted mb-4">Pastikan Anda berada di lokasi yang akan dilaporkan untuk akurasi maksimal.</p>
+
+                <button id="locationBtn" class="btn btn-primary btn-block" onclick="getLocation()">
+                    <i class="fas fa-location-arrow mr-2"></i>Deteksi Lokasi Saya
+                </button>
+                
+                <div id="status" class="mt-4"></div>
+
+                <button id="submitBtn" class="btn btn-dark btn-block mt-3" onclick="lanjutkanKeForm()" style="display:none;">
+                    <i class="fas fa-arrow-circle-right mr-2"></i>Lanjutkan ke Formulir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- KODE JAVASCRIPT TETAP SAMA, TIDAK ADA PERUBAHAN FUNGSI ---
+        var lat = '', lon = '';
+        var locationBtn = document.getElementById('locationBtn');
+        var submitBtn = document.getElementById('submitBtn');
+        var statusDiv = document.getElementById('status');
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                locationBtn.disabled = true;
+                statusDiv.innerHTML = '<div class="d-flex justify-content-center align-items-center"><div class="spinner-border text-primary" role="status"></div><span class="ml-3">Mencari lokasi akurat...</span></div>';
+                
+                var options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+                navigator.geolocation.getCurrentPosition(showPosition, showError, options);
+            } else {
+                statusDiv.innerHTML = '<div class="alert alert-danger">Geolocation tidak didukung browser ini.</div>';
+            }
+        }
+
+        function showPosition(position) {
+            lat = position.coords.latitude.toFixed(7).replace('.', ',');
+            lon = position.coords.longitude.toFixed(7).replace('.', ',');
+            
+            statusDiv.innerHTML = `<div class="alert alert-success">✅ Lokasi berhasil dideteksi!<br><b>Lat:</b> ${lat}<br><b>Lon:</b> ${lon}</div>`;
+            locationBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+        }
+
+        function showError(error) {
+            let message = "Gagal mendapatkan lokasi. Pastikan Anda memberikan izin akses lokasi dan berada di area terbuka.";
+            if (error.code == error.TIMEOUT) {
+                message = "Waktu permintaan habis. Coba lagi di tempat dengan sinyal lebih baik.";
+            }
+            statusDiv.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+            locationBtn.disabled = false;
+        }
+
+        function lanjutkanKeForm() {
+            if (lat === '' || lon === '') { alert('Lokasi belum didapatkan.'); return; }
+
+            // --- PENGATURAN WAJIB ---
+            var linkTemplate = 'https://docs.google.com/forms/d/e/1FAIpQLSdjKBAu_tOsdxEqmU1d9qYYZMKGro1ionmydhOahBpE1iPCmw/viewform?usp=pp_url&entry.1554698489=LATITUDE_DISINI&entry.1506546413=LONGITUDE_DISINI';
+            
+            var finalUrl = linkTemplate.replace('LATITUDE_DISINI', lat).replace('LONGITUDE_DISINI', lon);
+
+            statusDiv.innerHTML = '<div class="alert alert-info">Mengalihkan ke Google Forms...</div>';
+            
+            setTimeout(function() { window.top.location.href = finalUrl; }, 1000); 
+        }
+    </script>
+</body>
+</html>
