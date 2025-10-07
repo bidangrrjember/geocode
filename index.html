@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lokasi Pelaporan BPBD</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bpbd-orange: #f57d02;
+            --bpbd-dark-blue: #0f2c59;
+            --light-gray: #f4f4f9;
+        }
+        html {
+            height: 100%;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-gray);
+            min-height: 100%;
+        }
+        .main-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #fff;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px;
+        }
+        .graphic-side {
+            background: linear-gradient(rgba(15, 44, 89, 0.85), rgba(15, 44, 89, 0.85)), url(https://images.unsplash.com/photo-1599369986619-4b47a06a5a9c?q=80&w=1887&auto=format&fit=crop) no-repeat center center;
+            background-size: cover;
+            padding: 40px;
+            color: white;
+        }
+        .graphic-side h4 {
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .graphic-side p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        .form-side {
+            padding: 30px;
+        }
+        .bpbd-logo {
+            max-width: 70px;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            font-weight: 600;
+            color: #333;
+        }
+        .btn {
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: var(--bpbd-orange);
+            border-color: var(--bpbd-orange);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background-color: #e07000;
+            border-color: #e07000;
+            box-shadow: 0 4px 15px rgba(245, 125, 2, 0.4);
+        }
+        
+        /* DESKTOP VIEW (Layar Lebar) */
+        @media (min-width: 992px) {
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .main-container {
+                display: flex;
+                min-height: 550px;
+            }
+            .graphic-side {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                flex: 0 0 45%; /* Lebar kolom grafis */
+            }
+            .form-side {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* MOBILE VIEW (Layar Kecil) */
+        @media (max-width: 991.98px) {
+            .main-container {
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .graphic-side {
+                text-align: center;
+                padding: 25px 20px;
+            }
+            .graphic-side p {
+                display: none; /* Sembunyikan deskripsi panjang di HP */
+            }
+            .graphic-side .bpbd-logo {
+                 max-width: 60px;
+            }
+             .graphic-side h4 {
+                margin-top: 10px;
+                font-size: 1.25rem;
+            }
+            .form-side {
+                background-color: var(--light-gray);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="graphic-side">
+            <div class="text-center">
+                <img src="https://bidangrrjember.github.io/geocode/logo-bpbd.png" alt="Logo BPBD" class="bpbd-logo" style="background: white; border-radius: 50%; padding: 8px;">
+                <h4 class="text-white">Sistem Pelaporan Lokasi</h4>
+                <p class="d-none d-lg-block">Akurasi Data, Respon Cepat.</p>
+            </div>
+        </div>
+        
+        <div class="form-side">
+            <div class="text-center w-100">
+                <h5 class="card-title">Ambil Titik Koordinat</h5>
+                <p class="text-muted mb-4 small">Pastikan Anda berada di lokasi yang akan dilaporkan untuk akurasi maksimal.</p>
+
+                <button id="locationBtn" class="btn btn-primary btn-block" onclick="getLocation()">
+                    <i class="fas fa-location-arrow mr-2"></i>Deteksi Lokasi Saya
+                </button>
+                
+                <div id="status" class="mt-4"></div>
+
+                <button id="submitBtn" class="btn btn-dark btn-block mt-3" onclick="lanjutkanKeForm()" style="display:none;">
+                    <i class="fas fa-arrow-circle-right mr-2"></i>Lanjutkan ke Formulir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // KODE JAVASCRIPT TETAP SAMA, TIDAK ADA PERUBAHAN FUNGSI
+        var lat = '', lon = '';
+        var locationBtn = document.getElementById('locationBtn');
+        var submitBtn = document.getElementById('submitBtn');
+        var statusDiv = document.getElementById('status');
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                locationBtn.disabled = true;
+                statusDiv.innerHTML = '<div class="d-flex justify-content-center align-items-center"><div class="spinner-border text-primary" role="status"></div><span class="ml-3">Mencari lokasi akurat...</span></div>';
+                
+                var options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+                navigator.geolocation.getCurrentPosition(showPosition, showError, options);
+            } else {
+                statusDiv.innerHTML = '<div class="alert alert-danger">Geolocation tidak didukung browser ini.</div>';
+            }
+        }
+
+        function showPosition(position) {
+            lat = position.coords.latitude.toFixed(7).replace('.', ',');
+            lon = position.coords.longitude.toFixed(7).replace('.', ',');
+            
+            statusDiv.innerHTML = `<div class="alert alert-success">✅ Lokasi berhasil dideteksi!<br><b>Lat:</b> ${lat}<br><b>Lon:</b> ${lon}</div>`;
+            locationBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+        }
+
+        function showError(error) {
+            let message = "Gagal mendapatkan lokasi. Pastikan Anda memberikan izin akses lokasi dan berada di area terbuka.";
+            if (error.code == error.TIMEOUT) {
+                message = "Waktu permintaan habis. Coba lagi di tempat dengan sinyal lebih baik.";
+            }
+            statusDiv.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+            locationBtn.disabled = false;
+        }
+
+        function lanjutkanKeForm() {
+            if (lat === '' || lon === '') { alert('Lokasi belum didapatkan.'); return; }
+
+            // --- PENGATURAN WAJIB ---
+            var linkTemplate = 'https://docs.google.com/forms/d/e/1FAIpQLSdjKBAu_tOsdxEqmU1d9qYYZMKGro1ionmydhOahBpE1iPCmw/viewform?usp=pp_url&entry.1554698489=LATITUDE_DISINI&entry.1506546413=LONGITUDE_DISINI';
+            
+            var finalUrl = linkTemplate.replace('LATITUDE_DISINI', lat).replace('LONGITUDE_DISINI', lon);
+
+            statusDiv.innerHTML = '<div class="alert alert-info">Mengalihkan ke Google Forms...</div>';
+            
+            setTimeout(function() { window.top.location.href = finalUrl; }, 1000); 
+        }
+    </script>
+</body>
+</html>
