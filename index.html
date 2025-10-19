@@ -168,7 +168,7 @@
                 locationBtn.disabled = true;
                 statusDiv.innerHTML = '<div class="d-flex justify-content-center align-items-center"><div class="spinner-border text-primary" role="status"></div><span class="ml-3">Mencari lokasi akurat...</span></div>';
                 
-                var options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+                var options = { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 };
                 navigator.geolocation.getCurrentPosition(showPosition, showError, options);
             } else {
                 statusDiv.innerHTML = '<div class="alert alert-danger">Geolocation tidak didukung browser ini.</div>';
@@ -207,4 +207,5 @@
         }
     </script>
 </body>
+
 </html>
